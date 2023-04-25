@@ -4,6 +4,10 @@
       <div class="col-sm-10">
         <h1>Books</h1>
         <hr><br><br>
+        <!-- Add <alert> component, alert must be firstly defined in components of data() to be used in template -->
+        <!-- Firstly clear the message after click Add book button, then only show message after submitting adding a
+          book (whether the result succeed or not), i.e. don't show message if not submit -->
+        <alert :message=message v-if=showMessage></alert>
         <!-- Add book button is used to open a new popup window for adding a book by adding "modal-open" to body-->
         <button
           type="button"
@@ -116,6 +120,7 @@
 
 <script>
 import axios from 'axios';
+import Alert from './Alert.vue';
 
 export default {
   data() {
@@ -127,7 +132,13 @@ export default {
         read: [],
       },
       books: [],
+      message: '',
+      showMessage: false,
     };
+  },
+  components: {
+    // defined a "alert" component so it be used as "<alert></alert>" in template section
+    alert: Alert
   },
   methods: {
     addBook(payload) {
@@ -135,11 +146,15 @@ export default {
       axios.post(path, payload)
         .then(() => {
           this.getBooks();
+          this.message = 'Book added!';
+          this.showMessage = true;
         })
         .catch((error) => {
 
           console.log(error);
           this.getBooks();
+          this.message = error;
+          this.showMessage = true;
         });
     },
     getBooks() {
@@ -178,6 +193,7 @@ export default {
     toggleAddBookModal() {
       const body = document.querySelector('body');
       this.activeAddBookModal = !this.activeAddBookModal;
+      this.showMessage = false;
       if (this.activeAddBookModal) {
         body.classList.add('modal-open');  // open a popup window for adding a book
       } else {
