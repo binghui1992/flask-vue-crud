@@ -4,7 +4,13 @@
       <div class="col-sm-10">
         <h1>Books</h1>
         <hr><br><br>
-        <button type="button" class="btn btn-success btn-sm">Add Book</button>
+        <!-- Add book button is used to open a new popup window for adding a book by adding "modal-open" to body-->
+        <button
+          type="button"
+          class="btn btn-success btn-sm"
+          @click="toggleAddBookModal">
+          Add Book
+        </button>
         <br><br>
         <table class="table table-hover">
           <thead>
@@ -34,6 +40,77 @@
         </table>
       </div>
     </div>
+
+    <!-- add new book modal -->
+    <!-- This a new popup window for adding a book -->
+    <div
+      ref="addBookModal"
+      class="modal fade"
+      :class="{ show: activeAddBookModal, 'd-block': activeAddBookModal }"
+      tabindex="-1"
+      role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add a new book</h5>
+            <!-- Close button is used to close the popup window by removing the "modal-open" from body-->
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+              @click="toggleAddBookModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="addBookTitle" class="form-label">Title:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="addBookTitle"
+                  v-model="addBookForm.title"
+                  placeholder="Enter title">
+              </div>
+              <div class="mb-3">
+                <label for="addBookAuthor" class="form-label">Author:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="addBookAuthor"
+                  v-model="addBookForm.author"
+                  placeholder="Enter author">
+              </div>
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="addBookRead"
+                  v-model="addBookForm.read">
+                <label class="form-check-label" for="addBookRead">Read?</label>
+              </div>
+              <div class="btn-group" role="group">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="handleAddSubmit">
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  @click="handleAddReset">
+                  Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="activeAddBookModal" class="modal-backdrop fade show"></div>
   </div>
 </template>
 
@@ -41,25 +118,75 @@
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            books: [],
-        };
+  data() {
+    return {
+      activeAddBookModal: false,
+      addBookForm: {
+        title: '',
+        author: '',
+        read: [],
+      },
+      books: [],
+    };
+  },
+  methods: {
+    addBook(payload) {
+      const path = 'http://localhost:5001/books';
+      axios.post(path, payload)
+        .then(() => {
+          this.getBooks();
+        })
+        .catch((error) => {
+
+          console.log(error);
+          this.getBooks();
+        });
     },
-    methods: {
-        getBooks() {
-            const path = 'http://localhost:5001/books';
-            axios.get(path)
-                .then((res) => {
-                    this.books = res.data.books;
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        },
+    getBooks() {
+      const path = 'http://localhost:5001/books';
+      axios.get(path)
+        .then((res) => {
+          this.books = res.data.books;
+        })
+        .catch((error) => {
+
+          console.error(error);
+        });
     },
-    created() {
-        this.getBooks();
+    handleAddReset() {
+      this.initForm();
     },
+    handleAddSubmit() {
+      this.toggleAddBookModal();
+      let read = false;
+      if (this.addBookForm.read[0]) {
+        read = true;
+      }
+      const payload = {
+        title: this.addBookForm.title,
+        author: this.addBookForm.author,
+        read, // property shorthand
+      };
+      this.addBook(payload);
+      this.initForm();
+    },
+    initForm() {
+      this.addBookForm.title = '';
+      this.addBookForm.author = '';
+      this.addBookForm.read = [];
+    },
+    toggleAddBookModal() {
+      const body = document.querySelector('body');
+      this.activeAddBookModal = !this.activeAddBookModal;
+      if (this.activeAddBookModal) {
+        body.classList.add('modal-open');  // open a popup window for adding a book
+      } else {
+        body.classList.remove('modal-open');  // close the adding book popup window
+      }
+    },
+  },
+  created() {
+    this.getBooks();
+  },
 };
 </script>
