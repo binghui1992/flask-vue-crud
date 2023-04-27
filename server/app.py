@@ -42,25 +42,27 @@ def ping_pong():
 
 @app.route('/books', methods=['GET', 'POST'])
 def all_books():
-    response_object = {'status': 'success'}
+    response_object = {'status': 'error'}
     if request.method == 'POST':
         post_data = request.get_json()
+        book_id = uuid.uuid4().hex
         BOOKS.append({
             'book_id': uuid.uuid4().hex,
             'title': post_data.get('title'),
             'author': post_data.get('author'),
             'read': post_data.get('read'),
         })
-        response_object['message'] = 'Book added!'
-    else:
-        response_object['books'] = BOOKS
+        response_object = {'status': 'success', 'message': 'Book added!',
+                           'bookId': book_id}
+    elif request.method == 'GET':
+        response_object = {'status': 'success', 'books': BOOKS}
+
     return jsonify(response_object)
 
 
-@app.route('/books/<book_id>', methods=['PUT'])
+@app.route('/books/<book_id>', methods=['PUT', 'DELETE'])
 def single_book(book_id):
-    response_object = {'status': 'success'}
-
+    response_object = {'status': 'error'}
     if request.method == 'PUT':
         post_data = request.get_json()
         incoming_book = {
@@ -73,9 +75,22 @@ def single_book(book_id):
         for i, book in enumerate(BOOKS):
             if book['book_id'] == book_id:
                 BOOKS[i].update(incoming_book)
-                message = "Book updated!"
-                response_object['message'] = message
+                response_object = {'status': 'success',
+                                   'message': 'Book updated!'}
                 break
+        else:
+            response_object = {'status': 'error',
+                               'message': f'Book ID({book_id}) not found!'}
+    elif request.method == 'DELETE':
+        for i, book in enumerate(BOOKS):
+            if book['book_id'] == book_id:
+                BOOKS.pop(i)
+                response_object = {'status': 'success',
+                                   'message': 'Book removed!'}
+                break
+        else:
+            response_object = {'status': 'error',
+                               'message': f'Book ID({book_id}) not found!'}
 
     return jsonify(response_object)
 
