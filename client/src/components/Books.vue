@@ -41,7 +41,12 @@
                     @click="toggleEditBookModal(book)">
                     Update
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm">Delete</button>
+                  <el-button
+                    text
+                    type="danger"
+                    @click="handleDeleteBook(book)">
+                    Delete
+                  </el-button>
                 </div>
               </td>
             </tr>
@@ -195,7 +200,10 @@
 <script>
 // import modules or custom defined components
 import axios from 'axios';
+import { ElMessageBox } from 'element-plus'
+
 import Alert from './Alert.vue';
+
 
 export default {
   data() {
@@ -261,6 +269,19 @@ export default {
           this.getBooks();
         });
     },
+    deleteBook(bookID) {
+      const path = `http://localhost:5001/books/${bookID}`;
+      axios.delete(path)
+        .then(() => {
+          this.getBooks();
+          this.message = 'Book deleted';
+          this.showMessage = true;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.getBooks();
+        });
+    },
     handleAddReset() {
       this.initForm();
     },
@@ -309,6 +330,14 @@ export default {
       } else {
         body.classList.remove('modal-open');
       }
+    },
+    handleDeleteBook(book) {
+      ElMessageBox.confirm('Confirm to delete?')
+        .then(() => {
+          this.deleteBook(book.book_id);
+        })
+        .catch(() => {
+        })
     },
     handleEditSubmit() {
       this.toggleEditBookModal(null);
