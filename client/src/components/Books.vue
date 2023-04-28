@@ -251,6 +251,10 @@ export default {
       axios.get(path)
         .then((res) => {
           this.books = res.data.books;
+          if (this.books.length == 0) {
+            this.message = "No books! Please add one.";
+            this.showMessage = true;
+          }
         })
         .catch((error) => {
           console.error(error);
