@@ -72,6 +72,14 @@ def all_books():
 def single_book(book_id):
     response_object = {'status': 'error'}
 
+    # Verify if a valid uuid string
+    try:
+        uuid.UUID(book_id)
+    except ValueError:
+        response_object = {'status': 'error',
+                           'message': f'Invalid book ID format: "{book_id}"!'}
+        return response_object
+
     book = db.session.query(Book).filter_by(book_id=book_id).first()
     if book:
         if request.method == 'PUT':
