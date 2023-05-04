@@ -34,6 +34,7 @@ class Book(db.Model):
     title = db.Column(db.String(128))
     author = db.Column(db.String(128))
     read = db.Column(db.Boolean)
+    publish_date = db.Column(db.DateTime)
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
