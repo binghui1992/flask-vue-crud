@@ -6,6 +6,9 @@ from db import db
 
 class Book(db.Model):
     __tablename__ = "book"
+    # ensure being multiple imported will not cause exception
+    __table_args__ = {"extend_existing": True}
+
     book_id = db.Column(UUID(as_uuid=True), primary_key=True,
                         server_default=sqlalchemy.text("uuid_generate_v4()"))
     title = db.Column(db.String(128))
