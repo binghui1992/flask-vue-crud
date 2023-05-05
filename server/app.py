@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UUID
 import sqlalchemy
+from flask_migrate import Migrate
 
 
 config_file = os.path.join(os.path.dirname(__file__), 'database/config.yaml')
@@ -23,6 +24,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 class Book(db.Model):
