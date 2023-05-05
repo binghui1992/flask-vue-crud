@@ -1,4 +1,5 @@
-import json
+import uuid
+import yaml
 import os
 
 from flask import Flask, jsonify, request
@@ -8,9 +9,9 @@ from sqlalchemy import UUID
 import sqlalchemy
 
 
-config_file = os.path.join(os.path.dirname(__file__), 'database/config.json')
+config_file = os.path.join(os.path.dirname(__file__), 'database/config.yaml')
 with open(config_file, "r") as f:
-    DB_CONFIG = json.load(f)
+    DB_CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
 
 # instantiate the app

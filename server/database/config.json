@@ -1,7 +1,0 @@
-{
-    "hostname": "localhost",
-    "port": 5432,
-    "username": "postgres",
-    "password": "postgres",
-    "dbName": "book_store"
-}
