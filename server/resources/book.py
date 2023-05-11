@@ -1,15 +1,10 @@
 import uuid
 
-from flask import jsonify, request, Blueprint
-from flask_restful import Api, Resource
+from flask import jsonify, request
+from flask_restful import Resource
 
 from db import db
 from models.book import Book
-
-
-# Create a blueprint object
-bp = Blueprint("/", __name__)
-api = Api(bp)
 
 
 # sanity check route
@@ -91,7 +86,3 @@ class Books(Resource):
                 "message": f'Invalid book ID format: "{book_id}"!',
             }
             return response_object
-
-
-api.add_resource(PingPong, '/ping')
-api.add_resource(Books, "/books", "/books/<book_id>")

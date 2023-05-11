@@ -6,3 +6,4 @@ pyyaml
 Flask-Migrate
 gunicorn
 flask-restful
+flask-login

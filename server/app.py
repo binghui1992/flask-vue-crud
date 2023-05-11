@@ -6,7 +6,8 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from db import db
-from resources.book import bp
+from resources.auth import login_manager
+from resources.api import bp
 
 
 def create_app():
@@ -17,6 +18,7 @@ def create_app():
 
     # instantiate the app
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'your_secret_key_here'
     app.register_blueprint(bp)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -25,6 +27,8 @@ def create_app():
 
     db.init_app(app)
     Migrate(app, db)
+
+    login_manager.init_app(app)
 
     with app.app_context():
         db.create_all()
