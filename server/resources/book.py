@@ -2,6 +2,7 @@ import uuid
 
 from flask import jsonify, request
 from flask_restful import Resource
+from flask_login import login_required
 
 from db import db
 from models.book import Book
@@ -14,12 +15,14 @@ class PingPong(Resource):
 
 
 class Books(Resource):
+    @login_required
     def get(self):
         books = [book.as_dict() for book in db.session.query(Book).all()]
         response_object = {"status": "success", "books": books}
 
         return jsonify(response_object)
 
+    @login_required
     def post(self):
         post_data = request.get_json()
         book = Book(
@@ -37,6 +40,7 @@ class Books(Resource):
 
         return jsonify(response_object)
 
+    @login_required
     def put(self, book_id):
         response_object = self._verify_uuid(book_id)
         if response_object:
@@ -58,6 +62,7 @@ class Books(Resource):
 
         return jsonify(response_object)
 
+    @login_required
     def delete(self, book_id):
         response_object = self._verify_uuid(book_id)
         if response_object:
